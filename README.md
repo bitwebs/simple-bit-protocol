@@ -1,17 +1,17 @@
-# simple-hypercore-protocol
+# simple-bit-protocol
 
-Hypercore protocol state machine
+BIT protocol state machine
 
 ```
-npm install simple-hypercore-protocol
+npm install @web4/simple-bit-protocol
 ```
 
-Includes a Noise handshake, and is not backwards compatible with Hypercore <= 7
+Includes a Noise handshake, and is not backwards compatible with UniChain <= 1
 
 ## Usage
 
 ``` js
-const Protocol = require('simple-hypercore-protocol')
+const Protocol = require('@web4/simple-bit-protocol')
 
 const a = new Protocol(true, {
   send (data) { // send hook should send data

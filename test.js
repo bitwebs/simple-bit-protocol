@@ -1,17 +1,17 @@
 const tape = require('tape')
-const SHP = require('./')
+const SBP = require('./')
 
 const key = Buffer.alloc(32).fill('key')
 const discoveryKey = Buffer.alloc(32).fill('discovery')
 
 tape('single open', function (t) {
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     send (data) {
       b.recv(data)
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onopen (ch, message) {
       t.same(ch, 0)
       t.same(message.discoveryKey, discoveryKey)
@@ -27,13 +27,13 @@ tape('single open', function (t) {
 })
 
 tape('single close', function (t) {
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     send (data) {
       b.recv(data)
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onclose (ch, message) {
       t.same(ch, 0)
       t.same(message.discoveryKey, discoveryKey)
@@ -48,7 +48,7 @@ tape('single close', function (t) {
 })
 
 tape('back and fourth', function (t) {
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     ondata (ch, message) {
       t.same(ch, 0)
       t.same(message, {
@@ -64,7 +64,7 @@ tape('back and fourth', function (t) {
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onopen (ch, message) {
       t.same(ch, 0)
       t.same(message.discoveryKey, discoveryKey)
@@ -96,13 +96,13 @@ tape('back and fourth', function (t) {
 tape('various messages', function (t) {
   t.plan(9)
 
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     send (data) {
       process.nextTick(() => b.recv(data))
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onhandshake () {
       t.pass('handshook')
     },
@@ -133,7 +133,7 @@ tape('various messages', function (t) {
 tape('auth', function (t) {
   t.plan(4)
 
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     onauthenticate (remotePublicKey, done) {
       t.pass('authenticated b')
       if (remotePublicKey.equals(b.publicKey)) return done(null)
@@ -148,7 +148,7 @@ tape('auth', function (t) {
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onauthenticate (remotePublicKey, done) {
       t.pass('authenticated a')
       if (remotePublicKey.equals(a.publicKey)) return done(null)
@@ -168,7 +168,7 @@ tape('send ping', function (t) {
   let pinging = false
   let sent = 0
 
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     send (data) {
       if (pinging) sent++
       b.recv(data)
@@ -183,7 +183,7 @@ tape('send ping', function (t) {
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     send (data) {
       a.recv(data)
     }
@@ -195,10 +195,10 @@ tape('send ping', function (t) {
 tape('set key pair later', function (t) {
   let later = null
 
-  const a = new SHP(false, {
+  const a = new SBP(false, {
     keyPair (done) {
       setImmediate(function () {
-        later = SHP.keyPair()
+        later = SBP.keyPair()
         done(null, later)
       })
     },
@@ -207,7 +207,7 @@ tape('set key pair later', function (t) {
     }
   })
 
-  const b = new SHP(true, {
+  const b = new SBP(true, {
     send (data) {
       a.recv(data)
     },
@@ -223,7 +223,7 @@ tape('set key pair later', function (t) {
 })
 
 tape('disable noise', function (t) {
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     noise: false,
     encrypted: false,
     onhandshake () {
@@ -234,7 +234,7 @@ tape('disable noise', function (t) {
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     noise: false,
     encrypted: false,
     onhandshake () {
@@ -258,7 +258,7 @@ tape('handshakeHash', function (t) {
   t.plan(3)
 
   var pending = 3
-  const a = new SHP(true, {
+  const a = new SBP(true, {
     onhandshake () {
       if (--pending === 0) process.nextTick(check)
     },
@@ -267,7 +267,7 @@ tape('handshakeHash', function (t) {
     }
   })
 
-  const b = new SHP(false, {
+  const b = new SBP(false, {
     onhandshake () {
       if (--pending === 0) process.nextTick(check)
     },
