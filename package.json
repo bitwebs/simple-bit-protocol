@@ -1,10 +1,10 @@
 {
   "name": "@web4/simple-bit-protocol",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BIT protocol state machine",
   "main": "index.js",
   "dependencies": {
-    "@web4/bitweb-crypto": "^2.0.0",
+    "@web4/crypto": "^1.0.0",
     "noise-protocol": "^3.0.1",
     "protocol-buffers-encodings": "^1.1.0",
     "simple-handshake": "^3.0.0",
